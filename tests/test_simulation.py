@@ -6,12 +6,13 @@ if __name__ == '__main__':
     visible = True
     userControl = True
     sim = Simulation.simulation_from_file(
-        scenario_path, use_stk_engine=False, visible=visible, userControl=userControl)
+        scenario_path, use_stk_engine=False,
+        visible=visible, userControl=userControl)
     actions = [
-               [10.0,0.0,0.0],
-               [0.0,10.0,0.0],
-               [10.0,10.0,0.0],
-               [0.0,0.0,10.0],
+               [10.0, 0.0, 0.0],
+               [0.0, 10.0, 0.0],
+               [10.0, 10.0, 0.0],
+               [0.0, 0.0, 10.0],
               ]
     for action in actions:
         sim.execute_action(action)

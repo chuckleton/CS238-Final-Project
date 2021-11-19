@@ -1,8 +1,10 @@
 from agi.stk12.stkdesktop import STKDesktop
 from agi.stk12.stkengine import STKEngine
 
-from cs238_final_project.simulation.satellite import Satellite, AstrogatorSatellite
+from cs238_final_project.simulation.satellite import (Satellite,
+                                                      AstrogatorSatellite)
 from cs238_final_project.simulation.advcat import AdvCAT
+
 
 class Simulation:
     def __init__(self, scenario, use_stk_engine, **kwargs):
@@ -33,7 +35,8 @@ class Simulation:
 
             # Launch GUI
             print("Launching STK...")
-            stk = STKDesktop.StartApplication(visible=visible, userControl=userControl)
+            stk = STKDesktop.StartApplication(visible=visible,
+                                              userControl=userControl)
 
             # Get root object
             root = stk.Root
@@ -44,5 +47,7 @@ class Simulation:
         return cls(scenario, use_stk_engine, **kwargs)
 
     def execute_action(self, action, **kwargs):
-        self.agent.execute_action(action, self.current_time+self.timestep, **kwargs)
+        self.agent.execute_action(action,
+                                  self.current_time+self.timestep,
+                                  **kwargs)
         self.current_time += self.timestep

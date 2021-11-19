@@ -1,4 +1,7 @@
-from agi.stk12.stkobjects.astrogator import *
+from agi.stk12.stkobjects.astrogator import (AgEVASegmentType,
+    AgEVAManeuverType, AgEVAAttitudeControl, AgEVAPropulsionMethod,
+    AgVAStoppingCondition)
+
 
 class Satellite:
     def __init__(self, scenario, name):
@@ -22,17 +25,23 @@ class AstrogatorSatellite(Satellite):
         self.current_idx = 0
         self.reset_propagator()
 
-    def append_impulse_by_thrust_vector(self, thrust_vector, stop_time, **kwargs):
+    def append_impulse_by_thrust_vector(self, thrust_vector,
+                                        stop_time, **kwargs):
         driver = self.driver
         maneuver = driver.MainSequence.Insert(
-            AgEVASegmentType.eVASegmentTypeManeuver, f"Maneuver-{self.current_idx}", "Propagate")
+            AgEVASegmentType.eVASegmentTypeManeuver,
+            f"Maneuver-{self.current_idx}",
+            "Propagate")
         maneuver.SetManeuverType(AgEVAManeuverType.eVAManeuverTypeImpulsive)
         impulse = maneuver.Maneuver
         impulse.SetAttitudeControlType(
             AgEVAAttitudeControl.eVAAttitudeControlThrustVector)
-        impulse.AttitudeControl.AssignCartesian(xVal=thrust_vector[0], yVal=thrust_vector[1], zVal=thrust_vector[2])
+        impulse.AttitudeControl.AssignCartesian(xVal=thrust_vector[0],
+                                                yVal=thrust_vector[1],
+                                                zVal=thrust_vector[2])
         impulse.SetPropulsionMethod(
-            AgEVAPropulsionMethod.eVAPropulsionMethodEngineModel, "Constant Thrust and Isp")
+            AgEVAPropulsionMethod.eVAPropulsionMethodEngineModel,
+            "Constant Thrust and Isp")
 
         if 'UpdateMass' in kwargs:
             impulse.UpdateMass = kwargs['UpdateMass']
@@ -53,7 +62,8 @@ class AstrogatorSatellite(Satellite):
     def insert_propagate(self, TripVal, before_name='-'):
         driver = self.driver
         propagate = driver.MainSequence.Insert(
-            AgEVASegmentType.eVASegmentTypePropagate, f"Propagate-{self.current_idx}", before_name)
+            AgEVASegmentType.eVASegmentTypePropagate,
+            f"Propagate-{self.current_idx}", before_name)
         StopDuration = propagate.StoppingConditions.Item(0)
         AgVAStoppingCondition(StopDuration.Properties).Trip = TripVal
         driver.Options.DrawTrajectoryIn3D = False
@@ -69,7 +79,9 @@ class AstrogatorSatellite(Satellite):
         self.insert_propagate(self.scenario.StopTime)
 
     def reset_propagator(self):
-        sequence_names = [sequence.Name for sequence in self.driver.MainSequence if sequence.Name not in ['-', 'Initial State']]
+        sequence_names = [sequence.Name
+                          for sequence in self.driver.MainSequence
+                          if sequence.Name not in ['-', 'Initial State']]
         for sequence_name in sequence_names:
             self.driver.MainSequence.Remove(sequence_name)
         self.insert_propagate_to_stop()

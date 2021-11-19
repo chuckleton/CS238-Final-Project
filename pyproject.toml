@@ -11,6 +11,8 @@ python = "^3.10"
 numpy = "\b"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
