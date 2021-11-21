@@ -1,10 +1,13 @@
 from cs238_final_project.simulation.simulation import Simulation
+from agi.stk12.stkdesktop import STKDesktop
 
 scenario_path = "C:\\Users\\dkolano\\OneDrive - Agile Space Industries\\Documents\\STK 12\\test_astrogator_collision\\test_astrogator_collision.sc"
+
 
 if __name__ == '__main__':
     visible = True
     userControl = True
+
     sim = Simulation.simulation_from_file(
         scenario_path, use_stk_engine=False,
         visible=visible, userControl=userControl)

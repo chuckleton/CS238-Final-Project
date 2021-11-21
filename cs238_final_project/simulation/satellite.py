@@ -22,13 +22,14 @@ class AstrogatorSatellite(Satellite):
     def __init__(self, scenario, name):
         super().__init__(scenario, name)
         self.driver = self.satellite.Propagator
+        self.main_sequence = self.driver.MainSequence
         self.current_idx = 0
         self.reset_propagator()
 
     def append_impulse_by_thrust_vector(self, thrust_vector,
                                         stop_time, **kwargs):
-        driver = self.driver
-        maneuver = driver.MainSequence.Insert(
+        main_sequence = self.main_sequence
+        maneuver = main_sequence.Insert(
             AgEVASegmentType.eVASegmentTypeManeuver,
             f"Maneuver-{self.current_idx}",
             "Propagate")
@@ -60,35 +61,36 @@ class AstrogatorSatellite(Satellite):
         self.run_mcs()
 
     def insert_propagate(self, TripVal, sequence_name=None, before_name='-'):
-        driver = self.driver
+        main_sequence = self.main_sequence
         if sequence_name == None:
             sequence_name = f"Propagate-{self.current_idx}"
-        propagate = driver.MainSequence.Insert(
+        propagate = main_sequence.Insert(
             AgEVASegmentType.eVASegmentTypePropagate,
             sequence_name, before_name)
         StopDuration = propagate.StoppingConditions.Item(0)
         AgVAStoppingCondition(StopDuration.Properties).Trip = TripVal
 
     def update_propagate_to_stop(self):
-        driver = self.driver
-        propagate = driver.MainSequence.Item("Propagate")
+        main_sequence = self.main_sequence
+        propagate = main_sequence.Item("Propagate")
         propToStop = propagate.StoppingConditions.Add("UserSelect")
         propagate.StoppingConditions.Remove(0)
         propToStop.Properties.Trip = self.scenario.StopTime
 
     def insert_propagate_to_stop(self):
-        driver = self.driver
-        driver.MainSequence.Insert(
+        main_sequence = self.main_sequence
+        main_sequence.Insert(
             AgEVASegmentType.eVASegmentTypePropagate,
             'Propagate', '-')
         self.update_propagate_to_stop()
 
     def reset_propagator(self):
+        main_sequence = self.main_sequence
         sequence_names = [sequence.Name
-                          for sequence in self.driver.MainSequence
+                          for sequence in main_sequence
                           if sequence.Name not in ['-', 'Initial State']]
         for sequence_name in sequence_names:
-            self.driver.MainSequence.Remove(sequence_name)
+            main_sequence.Remove(sequence_name)
         self.insert_propagate_to_stop()
         self.run_mcs()
         self.current_idx = 0

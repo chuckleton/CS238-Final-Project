@@ -5,19 +5,22 @@ from cs238_final_project.simulation.satellite import (Satellite,
                                                       AstrogatorSatellite)
 from cs238_final_project.simulation.advcat import AdvCAT
 
+import time
+
 
 class Simulation:
-    def __init__(self, scenario, use_stk_engine, **kwargs):
+    def __init__(self, stk, use_stk_engine, **kwargs):
         self.use_stk_engine = use_stk_engine
-        self.scenario = scenario
-        self.root = scenario.Root
+        self.stk = stk
+        self.root = self.stk.Root
+        self.scenario = self.root.CurrentScenario
         # Set the units to EpSec so we can use seconds from simulation start
         self.root.UnitPreferences.Item('DateFormat').SetCurrentUnit('EpSec')
         self.agent = AstrogatorSatellite(self.scenario, 'Satellite1')
         self.target = Satellite(self.scenario, 'Satellite2')
         self.advcat = AdvCAT(self.scenario, 'AdvCAT1')
         self.timestep = kwargs.get('timestep', 1.0)
-        self.current_time = 0.0
+        self.reset_simulation()
 
     @classmethod
     def simulation_from_file(cls, file_path, use_stk_engine=True, **kwargs):
@@ -37,14 +40,12 @@ class Simulation:
             print("Launching STK...")
             stk = STKDesktop.StartApplication(visible=visible,
                                               userControl=userControl)
-
             # Get root object
             root = stk.Root
 
         # Load scenario from filepath
         root.LoadScenario(file_path)
-        scenario = root.CurrentScenario
-        return cls(scenario, use_stk_engine, **kwargs)
+        return cls(stk, use_stk_engine, **kwargs)
 
     def execute_action(self, action, **kwargs):
         self.agent.execute_action(action,
