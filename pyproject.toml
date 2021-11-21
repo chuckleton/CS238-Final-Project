@@ -9,10 +9,12 @@ license = "MIT"
 python = "^3.10"
 "agi.stk12" = {path = "bin/agi.stk12-12.2.0-py3-none-any.whl"}
 numpy = "\b"
+ipykernel = "^6.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 flake8 = "^4.0.1"
+autopep8 = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

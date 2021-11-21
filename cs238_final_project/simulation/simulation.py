@@ -51,3 +51,10 @@ class Simulation:
                                   self.current_time+self.timestep,
                                   **kwargs)
         self.current_time += self.timestep
+
+    def reset_simulation(self):
+        self.agent.reset_propagator()
+        self.current_time = 0.0
+
+    def get_state(self):
+        raise NotImplementedError

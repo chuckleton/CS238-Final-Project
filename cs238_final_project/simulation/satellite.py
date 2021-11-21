@@ -48,7 +48,7 @@ class AstrogatorSatellite(Satellite):
         else:
             impulse.UpdateMass = False
 
-        self.insert_propagate(stop_time)
+        self.insert_propagate(stop_time, before_name='Propagate')
         self.update_propagate_to_stop()
         self.current_idx += 1
 
@@ -59,14 +59,15 @@ class AstrogatorSatellite(Satellite):
         self.append_impulse_by_thrust_vector(action, stop_time, **kwargs)
         self.run_mcs()
 
-    def insert_propagate(self, TripVal, before_name='-'):
+    def insert_propagate(self, TripVal, sequence_name=None, before_name='-'):
         driver = self.driver
+        if sequence_name == None:
+            sequence_name = f"Propagate-{self.current_idx}"
         propagate = driver.MainSequence.Insert(
             AgEVASegmentType.eVASegmentTypePropagate,
-            f"Propagate-{self.current_idx}", before_name)
+            sequence_name, before_name)
         StopDuration = propagate.StoppingConditions.Item(0)
         AgVAStoppingCondition(StopDuration.Properties).Trip = TripVal
-        driver.Options.DrawTrajectoryIn3D = False
 
     def update_propagate_to_stop(self):
         driver = self.driver
@@ -76,7 +77,11 @@ class AstrogatorSatellite(Satellite):
         propToStop.Properties.Trip = self.scenario.StopTime
 
     def insert_propagate_to_stop(self):
-        self.insert_propagate(self.scenario.StopTime)
+        driver = self.driver
+        driver.MainSequence.Insert(
+            AgEVASegmentType.eVASegmentTypePropagate,
+            'Propagate', '-')
+        self.update_propagate_to_stop()
 
     def reset_propagator(self):
         sequence_names = [sequence.Name
@@ -85,3 +90,5 @@ class AstrogatorSatellite(Satellite):
         for sequence_name in sequence_names:
             self.driver.MainSequence.Remove(sequence_name)
         self.insert_propagate_to_stop()
+        self.run_mcs()
+        self.current_idx = 0
