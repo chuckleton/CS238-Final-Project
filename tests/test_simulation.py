@@ -1,5 +1,4 @@
 from cs238_final_project.simulation.simulation import Simulation
-from agi.stk12.stkdesktop import STKDesktop
 
 scenario_path = "C:\\Users\\dkolano\\OneDrive - Agile Space Industries\\Documents\\STK 12\\test_astrogator_collision\\test_astrogator_collision.sc"
 
@@ -17,5 +16,8 @@ if __name__ == '__main__':
                [10.0, 10.0, 0.0],
                [0.0, 0.0, 10.0],
               ]
-    for action in actions:
-        sim.execute_action(action)
+
+    for _ in range(3):
+        for action in actions:
+            sim.execute_action(action)
+        sim.reset_simulation()
